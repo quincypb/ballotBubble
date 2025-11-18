@@ -52,6 +52,22 @@ app.post("/subscribe", async (req, res) => {
   }
 });
 
+// Temp endpoint to see if db is good (delete for prod or secure)
+app.get("/all-subscribers", async (req, res) => {
+  try {
+    const result = await db.query("SELECT * FROM subscribers ORDER BY id DESC;");
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error fetching subscribers.");
+  }
+});
+
+
+
+
+
+
 //make email template in db (run once)
 // app.get("/init", async (req, res) => {
 //   try {
