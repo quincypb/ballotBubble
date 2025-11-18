@@ -2,9 +2,22 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { Resend } from "resend";   // <— FIXED
+import pkg from "pg";
+const { Client } = pkg;
 
 dotenv.config();
 
+// Database connection for email collection 
+const db = new Client({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
+});
+
+db.connect()
+  .then(() => console.log("Connected to Render Postgres"))
+  .catch(err => console.error("DB connection error", err));
+
+// express stuff 
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -12,6 +25,26 @@ app.use(express.json());
 
 // current static lander 
 app.use(express.static("public"));
+
+//make email template in db (run once)
+app.get("/init", async (req, res) => {
+  try {
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS subscribers (
+        id SERIAL PRIMARY KEY,
+        email VARCHAR(255) UNIQUE NOT NULL,
+        zipcode VARCHAR(20),               -- added here, allows NULL
+        created_at TIMESTAMP DEFAULT NOW()
+      );
+    `);
+
+    res.send("Subscribers table created.");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error creating table.");
+  }
+});
+
 
 
 // Root testing
