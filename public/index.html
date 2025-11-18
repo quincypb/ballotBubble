@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BallotBubble API</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #050505;
+      color: #fff;
+      font-family: "Inter", Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+      text-align: center;
+    }
+
+    /* TEXT LAYER */
+    .content {
+      position: relative;
+      z-index: 2;
+    }
+
+    h1 {
+      font-size: 3rem;
+      letter-spacing: 1px;
+      margin: 0;
+    }
+
+    p {
+      font-size: 1.2rem;
+      opacity: 0.8;
+      margin-top: 12px;
+    }
+
+    .tag {
+      margin-top: 25px;
+      padding: 10px 20px;
+      background: #ff0077;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 0.95rem;
+      box-shadow: 0 0 15px #ff007744;
+    }
+
+    /* BUBBLE ANIMATIONS */
+    .bubble {
+      position: absolute;
+      bottom: -150px;
+      width: 20px;
+      height: 20px;
+      background: #ff007766;
+      border-radius: 50%;
+      animation: rise 12s infinite ease-in;
+      filter: blur(1px);
+    }
+
+    @keyframes rise {
+      0% {
+        transform: translateY(0) scale(1);
+        opacity: 0.5;
+      }
+      40% {
+        opacity: 0.9;
+      }
+      70% {
+        opacity: 0.4;
+      }
+      100% {
+        transform: translateY(-120vh) scale(1.4);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Content Layer -->
+  <div class="content">
+    <h1>BallotBubble</h1>
+    <p>Your newsletter backend is live and bubbling.</p>
+    <div class="tag">/send endpoint active ✓</div>
+  </div>
+
+  <!-- Bubble Generator -->
+  <script>
+    function createBubble() {
+      const bubble = document.createElement("div");
+      bubble.classList.add("bubble");
+
+      const size = Math.random() * 40 + 10; // 10–50px
+      bubble.style.width = size + "px";
+      bubble.style.height = size + "px";
+      bubble.style.left = Math.random() * 100 + "vw";
+      bubble.style.animationDuration = Math.random() * 8 + 6 + "s";
+
+      document.body.appendChild(bubble);
+
+      setTimeout(() => bubble.remove(), 15000);
+    }
+
+    setInterval(createBubble, 500);
+  </script>
+
+</body>
+</html>
