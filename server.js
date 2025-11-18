@@ -23,7 +23,7 @@ app.post("/send", async (req, res) => {
 
   try {
     const data = await resend.emails.send({
-      from: process.env.FROM_EMAIL,
+      from: `BallotBubble <${process.env.FROM_EMAIL}>`,
       to,
       subject,
       html,
