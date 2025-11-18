@@ -26,24 +26,50 @@ app.use(express.json());
 // current static lander 
 app.use(express.static("public"));
 
-//make email template in db (run once)
-app.get("/init", async (req, res) => {
-  try {
-    await db.query(`
-      CREATE TABLE IF NOT EXISTS subscribers (
-        id SERIAL PRIMARY KEY,
-        email VARCHAR(255) UNIQUE NOT NULL,
-        zipcode VARCHAR(20),               -- added here, allows NULL
-        created_at TIMESTAMP DEFAULT NOW()
-      );
-    `);
+// for subscription end point 
+app.post("/subscribe", async (req, res) => {
+  const { email, zipcode } = req.body;
 
-    res.send("Subscribers table created.");
+  if (!email) {
+    return res.status(400).json({ error: "email_required" });
+  }
+
+  try {
+    const result = await db.query(
+      `
+      INSERT INTO subscribers (email, zipcode)
+      VALUES ($1, $2)
+      ON CONFLICT (email) DO UPDATE SET zipcode = EXCLUDED.zipcode
+      RETURNING *;
+      `,
+      [email, zipcode || null]
+    );
+
+    res.json({ status: "subscribed", subscriber: result.rows[0] });
   } catch (err) {
     console.error(err);
-    res.status(500).send("Error creating table.");
+    res.status(500).json({ error: "db_error" });
   }
 });
+
+//make email template in db (run once)
+// app.get("/init", async (req, res) => {
+//   try {
+//     await db.query(`
+//       CREATE TABLE IF NOT EXISTS subscribers (
+//         id SERIAL PRIMARY KEY,
+//         email VARCHAR(255) UNIQUE NOT NULL,
+//         zipcode VARCHAR(20),               -- added here, allows NULL
+//         created_at TIMESTAMP DEFAULT NOW()
+//       );
+//     `);
+
+//     res.send("Subscribers table created.");
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).send("Error creating table.");
+//   }
+// });
 
 
 
