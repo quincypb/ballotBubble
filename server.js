@@ -9,11 +9,16 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+
+// current static lander 
+app.use(express.static("public"));
+
+
 // Root testing
-app.get("/", (req, res) => {
-  res.send("ballotBubble backend is live!");
-  console.log("new page render");
-});
+// app.get("/", (req, res) => {
+//   res.send("ballotBubble backend is live!");
+//   console.log("new page render");
+// });
 
 // Resend setup
 const resend = new Resend(process.env.RESEND_API_KEY);
