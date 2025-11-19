@@ -19,6 +19,7 @@
       overflow: hidden;
       position: relative;
       text-align: center;
+      overflow-x: hidden; 
     }
 
     .content {
@@ -129,6 +130,39 @@
       70% { opacity: 0.4; }
       100% { transform: translateY(-120vh) scale(1.4); opacity: 0; }
     }
+
+
+
+
+    /* Mobile responsiveness */
+@media (max-width: 480px) {
+  h1 {
+    font-size: 2rem;
+  }
+
+  p {
+    font-size: 1rem;
+  }
+
+  .content {
+    padding: 15px;
+    max-width: 90%;
+  }
+
+  form {
+    padding: 15px;
+  }
+
+  input, button {
+    font-size: 0.95rem;
+    padding: 10px;
+  }
+
+  button {
+    width: 100%;
+  }
+}
+
   </style>
 </head>
 <body>
