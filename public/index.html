@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BallotBubble API</title>
+  <title>BallotBubble</title>
   <style>
     body {
       margin: 0;
@@ -21,35 +21,97 @@
       text-align: center;
     }
 
-    /* TEXT LAYER */
     .content {
       position: relative;
       z-index: 2;
+      width: 100%;
+      max-width: 400px;
+      padding: 20px;
     }
 
     h1 {
       font-size: 3rem;
       letter-spacing: 1px;
-      margin: 0;
+      margin-bottom: 10px;
     }
 
     p {
       font-size: 1.2rem;
       opacity: 0.8;
-      margin-top: 12px;
+      margin-bottom: 25px;
     }
 
-    .tag {
-      margin-top: 25px;
-      padding: 10px 20px;
+    /* FORM STYLE */
+    form {
+      background: #111;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 25px #ff007722;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    label {
+      text-align: left;
+      font-size: 0.9rem;
+      opacity: 0.9;
+      margin-bottom: -8px;
+    }
+
+    input {
+      padding: 12px;
+      background: #222;
+      border: 1px solid #333;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 1rem;
+    }
+
+    button {
+      z-index: 1;
+      padding: 12px;
       background: #ff0077;
-      border-radius: 10px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
       font-weight: bold;
-      font-size: 0.95rem;
-      box-shadow: 0 0 15px #ff007744;
+      cursor: pointer;
+      
     }
 
-    /* BUBBLE ANIMATIONS */
+    
+
+    button:hover {
+      background: #ff2288;
+    }
+
+    button.loading {
+      position: relative;
+      color: #111;
+      background: #ff0077;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      box-shadow: 0 0 5px #ff0077; /* base glow */
+      animation: glowShadow 2.5s linear infinite;
+    }
+    
+    @keyframes glowShadow {
+      0%   { box-shadow: 0 0 5px #ff0077, 0 0 10px #ff7700, 0 0 15px #ffff00; }
+      25%  { box-shadow: 0 0 5px #00ff77, 0 0 10px #00ffff, 0 0 15px #0077ff; }
+      50%  { box-shadow: 0 0 5px #ff00ff, 0 0 10px #ff0077, 0 0 15px #ff7700; }
+      75%  { box-shadow: 0 0 5px #ffff00, 0 0 10px #00ff77, 0 0 15px #00ffff; }
+      100% { box-shadow: 0 0 5px #ff0077, 0 0 10px #ff7700, 0 0 15px #ffff00; }
+    }
+    
+    
+    
+ 
+    
+    
+
+    /* BUBBLES */
     .bubble {
       position: absolute;
       bottom: -150px;
@@ -62,39 +124,36 @@
     }
 
     @keyframes rise {
-      0% {
-        transform: translateY(0) scale(1);
-        opacity: 0.5;
-      }
-      40% {
-        opacity: 0.9;
-      }
-      70% {
-        opacity: 0.4;
-      }
-      100% {
-        transform: translateY(-120vh) scale(1.4);
-        opacity: 0;
-      }
+      0% { transform: translateY(0) scale(1); opacity: 0.5; }
+      40% { opacity: 0.9; }
+      70% { opacity: 0.4; }
+      100% { transform: translateY(-120vh) scale(1.4); opacity: 0; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Content Layer -->
   <div class="content">
     <h1>BallotBubble</h1>
-    <p>Your newsletter backend is live and bubbling.</p>
-    <div class="tag">/send endpoint active ✓</div>
+    <p>Never miss your chance to vote.</p>
+
+    <form id="signup-form" onsubmit="return false;">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required />
+
+      <label for="zipcode">Zipcode</label>
+      <input type="text" id="zipcode" name="zipcode" required/>
+
+      <button type="submit">Subscribe</button>
+    </form>
   </div>
 
-  <!-- Bubble Generator -->
   <script>
     function createBubble() {
       const bubble = document.createElement("div");
       bubble.classList.add("bubble");
 
-      const size = Math.random() * 40 + 10; // 10–50px
+      const size = Math.random() * 40 + 10;
       bubble.style.width = size + "px";
       bubble.style.height = size + "px";
       bubble.style.left = Math.random() * 100 + "vw";
@@ -104,8 +163,54 @@
 
       setTimeout(() => bubble.remove(), 15000);
     }
-
     setInterval(createBubble, 500);
+
+
+
+
+
+    const form = document.getElementById("signup-form");
+    const button = form.querySelector("button");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault(); // prevent reload
+      button.classList.add("loading");
+      button.textContent = "Submitting...";
+
+      const email = form.email.value;
+      const zipcode = form.zipcode.value;
+
+      try {
+        const response = await fetch("/subscribe", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, zipcode }),
+        });
+
+        const data = await response.json();
+
+        setTimeout(() => {
+          button.classList.remove("loading");
+          button.textContent = "Subscribe";
+
+          if (response.ok) {
+            alert("Success: " + data.subscriber.email);
+          } else {
+            alert("Error: " + (data.error || "Unknown error"));
+          }
+        }, 3500);
+      } catch (err) {
+        setTimeout(() => {
+          button.classList.remove("loading");
+          button.textContent = "Subscribe";
+          alert("Network error");
+        }, 3500);
+      }
+    });
+
+
+
+
   </script>
 
 </body>
