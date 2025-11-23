@@ -1,3 +1,11 @@
+// New Structure thing 
+import candidatesRoutes from "./routes/candidatesRoutes.js";
+import subscribersRoutes from "./routes/subscribersRoutes.js"; 
+import emailRoutes from "./routes/emailRoutes.js";
+// New Structute thing 
+
+
+
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -115,6 +123,17 @@ app.post("/send", async (req, res) => {
     res.status(500).json({ error: "email_failed" });
   }
 });
+
+
+app.use("/api", candidatesRoutes);
+//app.use("/api", subscribersRoutes); 
+//app.use("/api", emailRoutes);
+
+
+
+
+
+
 
 // Port
 const port = process.env.PORT || 3000;
