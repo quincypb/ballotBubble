@@ -2,10 +2,10 @@ import fetch from "node-fetch";
 
 export const getPresidentialCandidates = async (req, res) => {
   try {
-    console.log("📡 Fetching presidential candidates from civicAPI...");
+    console.log("📡 Fetching presidential candidates from civicAPI... nvm govt");
 
     const response = await fetch(
-      "https://civicapi.org/api/results?race_type=President"
+      "https://civicapi.org/api/v2/race/search?query=Governor"
     );
 
     console.log("✅ Received response from API:", response.status, response.statusText);
